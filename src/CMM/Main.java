@@ -9,7 +9,7 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage loginStage) throws Exception {
         new LoginCMM();
     }
 
