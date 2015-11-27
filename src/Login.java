@@ -45,14 +45,14 @@ public class Login {
                     if (checkLogin(email, pwd)){
                         //close the login window?
                         //TODO: open the "Main" window of the application (Checker.java)
-                        System.out.println("Checked and connected!");
-                        new Checker(email, pwd);
+                        new Messenger("Checked and connected!");
+                        //new Checker(email, pwd);
                     }
                 } else {
-                    System.out.println("Please fill in the password.");
+                    new Messenger("Please fill in the password.");
                 }
             } else {
-                System.out.println("Please fill in the e-mail.");
+                new Messenger("Please fill in the e-mail.");
             }
         }); // Login button event end
     }
