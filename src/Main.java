@@ -1,7 +1,7 @@
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-/**
+/*
  * Created by German on 25.11.2015.
  * Main class. Enough said.
  */
