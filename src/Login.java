@@ -1,32 +1,36 @@
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import lib.DB.DB;
 import lib.JavaMail.JavaMail;
 
 /**
  * Created by German on 25.11.2015.
  * Creates a login window, validates the input, checks the connectivity and sends the data to DB class.
+ *
+ * TODO: implement a class that handles message output to the user (Messenger)
+ *
  */
-public class LoginCMM {
-    public LoginCMM(){
+public class Login {
+    public Login(){
         //Setting the stage
         VBox loginVBox = new VBox();
-        Scene loginScene = new Scene(loginVBox, 300, 300);
+        Scene loginScene = new Scene(loginVBox, 300, 150);
         Stage loginStage = new Stage();
+        loginStage.setTitle("Log in to CheckMyMail");
+        loginStage.setResizable(false);
 
         //VBox elements
         //TODO: add an optional IMAP server input
-        Label userEmailLabel = new Label("E-mail:");
         TextField userEmailInput = new TextField();
         userEmailInput.setPromptText("user@domain.com");
-
-        Label userPasswordLabel = new Label("Password:");
         PasswordField userPasswordInput = new PasswordField();
 
         Button loginButton = new Button("Log in");
-        loginVBox.getChildren().addAll(userEmailLabel, userEmailInput, userPasswordLabel, userPasswordInput, loginButton);
+        loginVBox.getChildren().addAll(new Label("E-mail:"), userEmailInput, new Label("Password:"), userPasswordInput, loginButton);
+        loginVBox.setAlignment(Pos.CENTER);
+        loginVBox.setSpacing(5);
 
         //Show the stage/scene:
         loginStage.setScene(loginScene);
@@ -40,8 +44,9 @@ public class LoginCMM {
                 if (pwd != null && !pwd.isEmpty()){
                     if (checkLogin(email, pwd)){
                         //close the login window?
-                        //TODO: open the "Main" window of the application
+                        //TODO: open the "Main" window of the application (Checker.java)
                         System.out.println("Checked and connected!");
+                        new Checker(email, pwd);
                     }
                 } else {
                     System.out.println("Please fill in the password.");
