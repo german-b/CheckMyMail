@@ -8,9 +8,6 @@ import lib.JavaMail.JavaMail;
 /**
  * Created by German on 25.11.2015.
  * Creates a login window, validates the input, checks the connectivity and sends the data to DB class.
- *
- * TODO: implement a class that handles message output to the user (Messenger)
- *
  */
 public class Login {
     public Login(){
@@ -23,7 +20,10 @@ public class Login {
 
         //VBox elements
         //TODO: add an optional IMAP server input
-        TextField userEmailInput = new TextField();
+        TextField userEmailInput = new TextField(); //TODO: shrink the width a bit
+        userEmailInput.setOnAction(event1 -> {
+            System.out.println(Validator.validateEmail(userEmailInput.getText()));
+        });
         userEmailInput.setPromptText("user@domain.com");
         PasswordField userPasswordInput = new PasswordField();
 
@@ -36,17 +36,30 @@ public class Login {
         loginStage.setScene(loginScene);
         loginStage.show();
 
+        //Handling the close request properly (prepared for a confirmation dialogue implementation)
+        loginStage.setOnCloseRequest(e -> {
+            e.consume();
+            loginStage.close();
+        });
+
         //Login button action
+        //TODO: implement Enter key press as event
         loginButton.setOnAction(event -> {
             String email = userEmailInput.getText();
             String pwd = userPasswordInput.getText();
             if (email != null && !email.isEmpty()){ //http://stackoverflow.com/a/3598792
                 if (pwd != null && !pwd.isEmpty()){
-                    if (checkLogin(email, pwd)){
-                        //close the login window?
-                        //TODO: open the "Main" window of the application (Checker.java)
-                        new Messenger("Checked and connected!");
-                        //new Checker(email, pwd);
+                    if (Validator.validateEmail(email)){
+                        if (checkLogin(email, pwd)){
+                            new Messenger("Connection successful!");
+                            //TODO: add the credentials to the DB
+                            new Checker(email, pwd);
+                            loginStage.close();
+                        } else {
+                            new Messenger("Authentication failed."); //TODO: handle this from the exception, if possible
+                        }
+                    } else {
+                        new Messenger(email + " is an invalid e-mail");
                     }
                 } else {
                     new Messenger("Please fill in the password.");
@@ -54,16 +67,11 @@ public class Login {
             } else {
                 new Messenger("Please fill in the e-mail.");
             }
-        }); // Login button event end
+        });
     }
 
     private boolean checkLogin(String email, String pwd) {
-        //TODO: regexp check for e-mail and check the connection
-        //Validator.regexpEmail(email);
-        JavaMail connector = new JavaMail();
-        if (connector.connectToStore(email, pwd)){
-            return true;
-        }
-        return false;
+            JavaMail connector = new JavaMail();
+            return connector.connectToStore(email, pwd);
     }
 }
