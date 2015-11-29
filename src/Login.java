@@ -1,6 +1,7 @@
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import lib.JavaMail.JavaMail;
@@ -21,9 +22,6 @@ public class Login {
         //VBox elements
         //TODO: add an optional IMAP server input
         TextField userEmailInput = new TextField(); //TODO: shrink the width a bit
-        userEmailInput.setOnAction(event1 -> {
-            System.out.println(Validator.validateEmail(userEmailInput.getText()));
-        });
         userEmailInput.setPromptText("user@domain.com");
         PasswordField userPasswordInput = new PasswordField();
 
@@ -43,7 +41,6 @@ public class Login {
         });
 
         //Login button action
-        //TODO: implement Enter key press as event
         loginButton.setOnAction(event -> {
             String email = userEmailInput.getText();
             String pwd = userPasswordInput.getText();
@@ -60,12 +57,24 @@ public class Login {
                         }
                     } else {
                         new Messenger(email + " is an invalid e-mail");
+                        userEmailInput.clear();
                     }
                 } else {
                     new Messenger("Please fill in the password.");
                 }
             } else {
                 new Messenger("Please fill in the e-mail.");
+            }
+        });
+        //Allow enter key to submit the form
+        userEmailInput.setOnKeyPressed(event -> {
+            if (event.getCode().equals(KeyCode.ENTER)){
+                loginButton.fire();
+            }
+        });
+        userPasswordInput.setOnKeyPressed(event -> {
+            if (event.getCode().equals(KeyCode.ENTER)){
+                loginButton.fire();
             }
         });
     }

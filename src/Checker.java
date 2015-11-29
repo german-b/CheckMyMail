@@ -5,9 +5,6 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import lib.JavaMail.JavaMail;
 
-import javax.mail.Message;
-import javax.mail.Store;
-
 /**
  * Created by German on 27.11.2015.
  * Creates the main window (+taskbar stuff) and implements the actual mail checking functionality
@@ -37,7 +34,7 @@ public class Checker {
 
         Label sampleLabel = new Label(Integer.toString(emailsCount));
         try {
-            connector.getEmails(email, pwd, 2);
+            System.out.println(connector.getEmails(email, pwd, 2));
 
         } catch (Exception e) {
             e.printStackTrace();

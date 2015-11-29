@@ -2,6 +2,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -24,6 +25,13 @@ public class Messenger {
         msgStage.setScene(msgScene);
         Button msgButton= new Button("OK");
         msgBox.getChildren().addAll(new Label(msg), msgButton);
+
+        //Allow enter key to close the popup
+        msgButton.setOnKeyPressed(event1 -> {
+            if (event1.getCode().equals(KeyCode.ENTER)){
+                msgButton.fire();
+            }
+        });
 
         msgButton.setOnAction(event -> msgStage.close());
         msgStage.showAndWait(); //Does not return to the caller until closed

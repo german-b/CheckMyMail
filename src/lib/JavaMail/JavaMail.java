@@ -1,11 +1,10 @@
 package lib.JavaMail;
 
+import org.jsoup.Jsoup;
+
 import javax.mail.*;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
+import javax.mail.internet.MimeMultipart;
+import java.util.*;
 
 /**
  * Created by German on 25.11.2015.
@@ -85,22 +84,20 @@ public class JavaMail {
         return emailsCount;
     }
     public ArrayList getEmails(String email, String pwd, int num) throws Exception{
-        ArrayList emails = new ArrayList();
+        ArrayList<Object> emails = new ArrayList<>();
         try {
             Store store = getStore(email, pwd);
             Folder inbox = store.getFolder("INBOX");
             inbox.open(Folder.READ_ONLY);
             int count = inbox.getMessageCount();
             Message[] messages = inbox.getMessages(count - num + 1, count);
-            System.out.println("num: " + num + "\n" + "count: " + count);
             for (Message message : messages){
                 Address[] fromAddresses = message.getFrom();
-                System.out.println("-------------");
-                System.out.println("From: " + fromAddresses[0].toString());
-                System.out.println("Subject: " + message.getSubject());
-                System.out.println("Sent: " + message.getSentDate());
+                emails.add(fromAddresses[0].toString()); //From:
+                emails.add(message.getSubject()); //Subject:
+                emails.add(message.getSentDate().toString()); // TODO: refine the date format and make it dependent on the settings
                 try {
-                    System.out.println(message.getContent().toString());
+                    emails.add(getBodyFromMessage(message));
                 } catch (Exception e) {
                     System.out.println("Error reading e-mail.");
                     e.printStackTrace();
@@ -109,6 +106,27 @@ public class JavaMail {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-        return emails; //TODO: append the messages array to emails ArrayList
+        return emails;
+    }//TODO: handle the different mime types gracefully, not that easy with the below method...
+    private String getBodyFromMessage(Message message) throws Exception { //http://stackoverflow.com/a/31877854
+        if (message.isMimeType("text/plain")){
+            return message.getContent().toString();
+        }else if (message.isMimeType("multipart/*")) {
+            String result = "";
+            MimeMultipart mimeMultipart = (MimeMultipart)message.getContent();
+            int count = mimeMultipart.getCount();
+            for (int i = 0; i < count; i ++){
+                BodyPart bodyPart = mimeMultipart.getBodyPart(i);
+                if (bodyPart.isMimeType("text/plain")){
+                    result = result + "\n" + bodyPart.getContent();
+                    break;  //without break same text appears twice in my tests
+                } else if (bodyPart.isMimeType("text/html")){
+                    String html = (String) bodyPart.getContent();
+                    result = result + "\n" + Jsoup.parse(html).text();
+                }
+            }
+            return result;
+        }
+        return "";
     }
 }
