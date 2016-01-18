@@ -1,9 +1,9 @@
 package lib.JavaMail;
 
-import org.jsoup.Jsoup;
+//import org.jsoup.Jsoup;
 
 import javax.mail.*;
-import javax.mail.internet.MimeMultipart;
+//import javax.mail.internet.MimeMultipart;
 import java.util.*;
 
 /**
@@ -21,17 +21,10 @@ public class JavaMail {
                                            String host, String port) {
         Properties properties = new Properties();
         properties.put(String.format("mail.%s.host",protocol), host);
-        properties.put(String.format("mail.%s.port",
-                protocol), port);
-        properties.setProperty(
-                String.format("mail.%s.socketFactory.class",
-                        protocol), "javax.net.ssl.SSLSocketFactory");
-        properties.setProperty(
-                String.format("mail.%s.socketFactory.fallback",
-                        protocol), "false");
-        properties.setProperty(
-                String.format("mail.%s.socketFactory.port",
-                        protocol), String.valueOf(port));
+        properties.put(String.format("mail.%s.port", protocol), port);
+        properties.setProperty(String.format("mail.%s.socketFactory.class", protocol), "javax.net.ssl.SSLSocketFactory");
+        properties.setProperty(String.format("mail.%s.socketFactory.fallback", protocol), "false");
+        properties.setProperty(String.format("mail.%s.socketFactory.port", protocol), String.valueOf(port));
         properties.setProperty("mail.imap.ssl.enable", "true");
 
         return properties;
@@ -84,7 +77,7 @@ public class JavaMail {
         return emailsCount;
     }
     public ArrayList getEmails(String email, String pwd, int num) throws Exception{
-        ArrayList<Object> emails = new ArrayList<>();
+        ArrayList<Object> emails = new ArrayList<>(); //TODO: make this 2D arraylist ([email][part])
         try {
             Store store = getStore(email, pwd);
             Folder inbox = store.getFolder("INBOX");
@@ -93,22 +86,22 @@ public class JavaMail {
             Message[] messages = inbox.getMessages(count - num + 1, count);
             for (Message message : messages){
                 Address[] fromAddresses = message.getFrom();
+                emails.add(message.getSentDate().toString()); // TODO: refine the date format and make it dependent on the settings
                 emails.add(fromAddresses[0].toString()); //From:
                 emails.add(message.getSubject()); //Subject:
-                emails.add(message.getSentDate().toString()); // TODO: refine the date format and make it dependent on the settings
-                try {
+                /*try {
                     emails.add(getBodyFromMessage(message));
                 } catch (Exception e) {
                     System.out.println("Error reading e-mail.");
                     e.printStackTrace();
-                }
+                }*/
             }
         } catch (MessagingException e) {
             e.printStackTrace();
         }
         return emails;
-    }//TODO: handle the different mime types gracefully, not that easy with the below method...
-    private String getBodyFromMessage(Message message) throws Exception { //http://stackoverflow.com/a/31877854
+    }//TODO: handle the different mime types gracefully, not that easy with the below method...scrap for now.
+    /*private String getBodyFromMessage(Message message) throws Exception { //http://stackoverflow.com/a/31877854
         if (message.isMimeType("text/plain")){
             return message.getContent().toString();
         }else if (message.isMimeType("multipart/*")) {
@@ -128,5 +121,5 @@ public class JavaMail {
             return result;
         }
         return "";
-    }
+    }*/
 }

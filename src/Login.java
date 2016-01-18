@@ -42,9 +42,14 @@ public class Login {
 
         //Login button action
         loginButton.setOnAction(event -> {
-            String email = userEmailInput.getText();
-            String pwd = userPasswordInput.getText();
-            if (email != null && !email.isEmpty()){ //http://stackoverflow.com/a/3598792
+            String email = "secretemail";//userEmailInput.getText();
+            String pwd = "secretpassword";//userPasswordInput.getText();
+            //BEGIN TEMPORARY
+            new Messenger("Connection successful!");
+            new Checker(email, pwd);
+            loginStage.close();
+            //END TEMPORARY
+            /*if (email != null && !email.isEmpty()){ //http://stackoverflow.com/a/3598792
                 if (pwd != null && !pwd.isEmpty()){
                     if (Validator.validateEmail(email)){
                         if (checkLogin(email, pwd)){
@@ -64,7 +69,7 @@ public class Login {
                 }
             } else {
                 new Messenger("Please fill in the e-mail.");
-            }
+            }*/
         });
         //Allow enter key to submit the form
         userEmailInput.setOnKeyPressed(event -> {
@@ -78,9 +83,9 @@ public class Login {
             }
         });
     }
-
+/*
     private boolean checkLogin(String email, String pwd) {
             JavaMail connector = new JavaMail();
             return connector.connectToStore(email, pwd);
-    }
+    }*/
 }

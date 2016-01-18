@@ -5,6 +5,8 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import lib.JavaMail.JavaMail;
 
+import java.util.ArrayList;
+
 /**
  * Created by German on 27.11.2015.
  * Creates the main window (+taskbar stuff) and implements the actual mail checking functionality
@@ -33,9 +35,14 @@ public class Checker {
         checkerStage.setScene(checkerMainScene);
 
         Label sampleLabel = new Label(Integer.toString(emailsCount));
-        try {
-            System.out.println(connector.getEmails(email, pwd, 2));
 
+        try {
+            ArrayList emails = connector.getEmails(email, pwd, 1);
+            int count = emails.size(); //Every e-mail consists of sender, subject and date (for now)
+            for (int i = 0; i < count; ++i) {
+                //Iterate through the ArrayList and create nodes + add to GridPane
+                System.out.println(emails.get(i));
+            }
         } catch (Exception e) {
             e.printStackTrace();
             new Messenger(e.toString());
@@ -44,7 +51,6 @@ public class Checker {
         emailsGrid.add(sampleLabel, 0, 0);
         checkerStage.show();
     }
-
 /*    private checkerTimer(int minutes){
         //Loop the e-mail check every 'minutes' minutes
 
