@@ -1,0 +1,4 @@
+            Label example = new Label();
+            example.setText(countS);
+            Label text = new Label("Total emails in inbox: ");
+            emailsBox.getChildren().addAll(text, example);//Add the current email to VBox

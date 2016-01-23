@@ -1,10 +1,13 @@
 package lib.JavaMail;
 
-import org.jsoup.Jsoup;
-
+import Main.Messenger;
 import javax.mail.*;
-import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MailDateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
+//import org.jsoup.Jsoup;
+//import javax.mail.internet.MimeMultipart;
 
 /**
  * Created by German on 25.11.2015.
@@ -12,26 +15,20 @@ import java.util.*;
  * so the errors thrown should be only connectivity/API related.
  *
  * TODO: leave just a single method that returns object Store (instead of connectToStore and getStore
+ * TODO: write a constructor so that we would not have to pass email&pw to every single method
  */
+
 public class JavaMail {
     String protocol = "imap";
     String host = "imap.gmail.com";
     String port = "993";
-        private Properties getServerProperties(String protocol,
-                                           String host, String port) {
+        private Properties getServerProperties(String protocol, String host, String port) {
         Properties properties = new Properties();
         properties.put(String.format("mail.%s.host",protocol), host);
-        properties.put(String.format("mail.%s.port",
-                protocol), port);
-        properties.setProperty(
-                String.format("mail.%s.socketFactory.class",
-                        protocol), "javax.net.ssl.SSLSocketFactory");
-        properties.setProperty(
-                String.format("mail.%s.socketFactory.fallback",
-                        protocol), "false");
-        properties.setProperty(
-                String.format("mail.%s.socketFactory.port",
-                        protocol), String.valueOf(port));
+        properties.put(String.format("mail.%s.port", protocol), port);
+        properties.setProperty(String.format("mail.%s.socketFactory.class", protocol), "javax.net.ssl.SSLSocketFactory");
+        properties.setProperty(String.format("mail.%s.socketFactory.fallback", protocol), "false");
+        properties.setProperty(String.format("mail.%s.socketFactory.port", protocol), String.valueOf(port));
         properties.setProperty("mail.imap.ssl.enable", "true");
 
         return properties;
@@ -40,9 +37,6 @@ public class JavaMail {
         Properties properties = getServerProperties(protocol, host, port);
         Session session = Session.getDefaultInstance(properties);
         //session.setDebug(true);
-        //Dummy user and pwd for layout & login flow testing without actual connection
-        if (email.equals("test") && pwd.equals("test"))
-            return true;
         try {
             Store store = session.getStore(protocol);
             store.connect(email, pwd);
@@ -50,7 +44,7 @@ public class JavaMail {
             return true;
         }
         catch (AuthenticationFailedException ex){
-            //new Messenger("Authentication failed."); WTF?!?!?
+            new Main.Messenger("Authentication failed.");
             ex.printStackTrace();
         }
         catch (MessagingException ex){
@@ -66,7 +60,13 @@ public class JavaMail {
             try {
                 store = session.getStore(protocol);
                 store.connect(email, pwd);
-            } catch (MessagingException ex) {
+            }
+            catch (AuthenticationFailedException ex){
+                new Main.Messenger("Error: Authentication failed.");
+                ex.printStackTrace();
+            }
+            catch (MessagingException ex) {
+                new Messenger("Error: Could not connect to the message store.");
                 ex.printStackTrace();
             }
         return store;
@@ -83,32 +83,46 @@ public class JavaMail {
         }
         return emailsCount;
     }
-    public ArrayList getEmails(String email, String pwd, int num) throws Exception{
-        ArrayList<Object> emails = new ArrayList<>();
+    public ArrayList<ArrayList<String>> getEmails(String email, String pwd, int num) throws Exception {
+        ArrayList<ArrayList<String>> emails = new ArrayList<>();
+        Message[] messages;
         try {
             Store store = getStore(email, pwd);
             Folder inbox = store.getFolder("INBOX");
             inbox.open(Folder.READ_ONLY);
             int count = inbox.getMessageCount();
-            Message[] messages = inbox.getMessages(count - num + 1, count);
-            for (Message message : messages){
+            int arrayCount = 0;
+            messages = inbox.getMessages(count - num + 1, count);
+            for (Message message : messages) {
+                emails.add(new ArrayList<>());
                 Address[] fromAddresses = message.getFrom();
-                emails.add(fromAddresses[0].toString()); //From:
-                emails.add(message.getSubject()); //Subject:
-                emails.add(message.getSentDate().toString()); // TODO: refine the date format and make it dependent on the settings
-                try {
+                //http://stackoverflow.com/a/5215224
+                String fromAddress = fromAddresses == null ? null : ((InternetAddress) fromAddresses[0]).getAddress();
+
+                emails.get(arrayCount).add(message.getSubject()); //Subject:
+                emails.get(arrayCount).add(fromAddress); //From:
+                emails.get(arrayCount).add(formatDate(message.getSentDate())); // TODO: refine the date format and make it dependent on the settings
+
+                arrayCount++;
+                /*try {
                     emails.add(getBodyFromMessage(message));
                 } catch (Exception e) {
                     System.out.println("Error reading e-mail.");
                     e.printStackTrace();
-                }
+                }*/
             }
         } catch (MessagingException e) {
             e.printStackTrace();
         }
         return emails;
-    }//TODO: handle the different mime types gracefully, not that easy with the below method...
-    private String getBodyFromMessage(Message message) throws Exception { //http://stackoverflow.com/a/31877854
+    }//TODO: handle the different mime types gracefully, not that easy with the below method...scrap for now.
+
+    private String formatDate(Date sentDate) {
+        String dateFormat = "yyyy-MM-dd HH:mm:ss";
+        String readyDate = new SimpleDateFormat(dateFormat).format(sentDate);
+        return readyDate;
+    }
+    /*private String getBodyFromMessage(Message message) throws Exception { //http://stackoverflow.com/a/31877854
         if (message.isMimeType("text/plain")){
             return message.getContent().toString();
         }else if (message.isMimeType("multipart/*")) {
@@ -128,5 +142,5 @@ public class JavaMail {
             return result;
         }
         return "";
-    }
+    }*/
 }
