@@ -22,9 +22,10 @@ public class JavaMail {
     String protocol = "imap";
     String host = "imap.gmail.com";
     String port = "993";
-        private Properties getServerProperties(String protocol, String host, String port) {
+
+    private Properties getServerProperties(String protocol, String host, String port) {
         Properties properties = new Properties();
-        properties.put(String.format("mail.%s.host",protocol), host);
+        properties.put(String.format("mail.%s.host", protocol), host);
         properties.put(String.format("mail.%s.port", protocol), port);
         properties.setProperty(String.format("mail.%s.socketFactory.class", protocol), "javax.net.ssl.SSLSocketFactory");
         properties.setProperty(String.format("mail.%s.socketFactory.fallback", protocol), "false");
@@ -33,6 +34,7 @@ public class JavaMail {
 
         return properties;
     }
+
     public boolean connectToStore(String email, String pwd) {
         Properties properties = getServerProperties(protocol, host, port);
         Session session = Session.getDefaultInstance(properties);
@@ -42,36 +44,34 @@ public class JavaMail {
             store.connect(email, pwd);
             store.close();
             return true;
-        }
-        catch (AuthenticationFailedException ex){
+        } catch (AuthenticationFailedException ex) {
             new Main.Messenger("Authentication failed.");
             ex.printStackTrace();
-        }
-        catch (MessagingException ex){
+        } catch (MessagingException ex) {
             System.out.println("Could not connect to the message store");
             ex.printStackTrace();
         }
         return false;
     }
+
     public Store getStore(String email, String pwd) {
         Store store = null;
         Properties properties = getServerProperties(protocol, host, port);
         Session session = Session.getDefaultInstance(properties);
-            try {
-                store = session.getStore(protocol);
-                store.connect(email, pwd);
-            }
-            catch (AuthenticationFailedException ex){
-                new Main.Messenger("Error: Authentication failed.");
-                ex.printStackTrace();
-            }
-            catch (MessagingException ex) {
-                new Messenger("Error: Could not connect to the message store.");
-                ex.printStackTrace();
-            }
+        try {
+            store = session.getStore(protocol);
+            store.connect(email, pwd);
+        } catch (AuthenticationFailedException ex) {
+            new Main.Messenger("Error: Authentication failed.");
+            ex.printStackTrace();
+        } catch (MessagingException ex) {
+            new Messenger("Error: Could not connect to the message store.");
+            ex.printStackTrace();
+        }
         return store;
     }
-    public int getEmailsCount(String email, String pwd){
+
+    public int getEmailsCount(String email, String pwd) {
         int emailsCount = 0;
         Store store = getStore(email, pwd);
         try {
@@ -83,6 +83,7 @@ public class JavaMail {
         }
         return emailsCount;
     }
+
     public ArrayList<ArrayList<String>> getEmails(String email, String pwd, int num) throws Exception {
         ArrayList<ArrayList<String>> emails = new ArrayList<>();
         Message[] messages;
@@ -119,8 +120,7 @@ public class JavaMail {
 
     private String formatDate(Date sentDate) {
         String dateFormat = "yyyy-MM-dd HH:mm:ss";
-        String readyDate = new SimpleDateFormat(dateFormat).format(sentDate);
-        return readyDate;
+        return new SimpleDateFormat(dateFormat).format(sentDate);
     }
     /*private String getBodyFromMessage(Message message) throws Exception { //http://stackoverflow.com/a/31877854
         if (message.isMimeType("text/plain")){

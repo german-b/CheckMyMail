@@ -23,7 +23,7 @@ public class Login {
     DB d = new DB();
     JavaMail connector = new JavaMail();
 
-    public Login(){
+    public Login() {
         //Setting the stage
         VBox loginVBox = new VBox();
         Scene loginScene = new Scene(loginVBox, 300, 170);
@@ -60,9 +60,9 @@ public class Login {
             String email = userEmailInput.getText();
             String pwd = userPasswordInput.getText();
 
-            if (!email.isEmpty()){ //http://stackoverflow.com/a/3598792
-                if (!pwd.isEmpty()){
-                    if (Validator.validateEmail(email)){
+            if (!email.isEmpty()) { //http://stackoverflow.com/a/3598792
+                if (!pwd.isEmpty()) {
+                    if (Validator.validateEmail(email)) {
                         checkLogin(email, pwd);
                         new Checker(email, pwd);
                         loginStage.close();
@@ -80,26 +80,27 @@ public class Login {
         });
         //Allow enter key to submit the form
         userEmailInput.setOnKeyPressed(event -> {
-            if (event.getCode().equals(KeyCode.ENTER)){
+            if (event.getCode().equals(KeyCode.ENTER)) {
                 loginButton.fire();
             }
         });
         userPasswordInput.setOnKeyPressed(event -> {
-            if (event.getCode().equals(KeyCode.ENTER)){
+            if (event.getCode().equals(KeyCode.ENTER)) {
                 loginButton.fire();
             }
         });
 
         //Populate the login form if user exists in DB
-        HashMap user =  d.getUser();
-        if(user.containsKey("username") && user.containsKey("password")) {
+        HashMap user = d.getUser();
+        if (user.containsKey("username") && user.containsKey("password")) {
             this.userEmailInput.setText(user.get("username").toString());
             this.userPasswordInput.setText(user.get("password").toString());
         }
     }
+
     private void checkLogin(String email, String pwd) {
-        if (connector.connectToStore(email, pwd)){
-            if (rememberMe.isSelected()){
+        if (connector.connectToStore(email, pwd)) {
+            if (rememberMe.isSelected()) {
                 //Add working user to DB
                 d.createUser(email, pwd);
             } else {
