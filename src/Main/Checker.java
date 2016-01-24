@@ -15,8 +15,8 @@ import java.util.*;
 
 /**
  * Created by German on 27.11.2015.
- * Creates the main window (+taskbar stuff) and implements the actual mail checking functionality
- *
+ * Creates the main window and implements the actual mail checking functionality
+ * TODO: taskbar implementation
  */
 
 public class Checker {
@@ -31,11 +31,10 @@ public class Checker {
     //Make stage available for all methods
     private static Stage checkerStage = new Stage();
 
-
     public Checker(String email, String pwd){
         //Settings
         int minutes = Settings.getDelay();
-        int num = Settings.getEmailsNumber();
+        int num = Settings.getCount();
 
         //Setting the window
         mainWindow.setSpacing(5);
@@ -57,6 +56,8 @@ public class Checker {
         header.getChildren().addAll(forceCheck, settings);
         Separator separateHeader = new Separator();
         buttons.getChildren().addAll(forceCheck, settings);
+        buttons.setSpacing(10);
+        buttons.setAlignment(Pos.CENTER);
         header.getChildren().addAll(buttons, separateHeader);
         mainWindow.getChildren().addAll(header, emailsBox);
 
@@ -111,7 +112,7 @@ public class Checker {
     private void checkForEmails(String email, String pwd, int num, int minutes) {
        try {
            System.out.println("Delay: " + Settings.getDelay());
-           System.out.println("Count: " + Settings.getEmailsNumber());
+           System.out.println("Count: " + Settings.getCount());
             ArrayList<ArrayList<String>> emails = connector.getEmails(email, pwd, num);
             Collections.reverse(emails); //getEmails returns oldest email first, reverse that TODO: make this settings dependant
 
@@ -139,7 +140,6 @@ public class Checker {
                                     System.out.println("No new emails.");
                                     return;
                                 } else if (diff > 0 && !firstRun){
-                                    System.out.println("Firstrun inside diff>0 !firstRun: " + firstRun);
                                     emailsBox.getChildren().clear();
                                 }
                                 setTempCount(getEmailCount(email, pwd) + diff); //Temp?
@@ -156,7 +156,6 @@ public class Checker {
                                     emailsBox.getChildren().add(singleEmail);//Add the current email to VBox
                                 }
                                 setStageTitle("Total emails: " + getTempCount());
-                                System.out.println("Firstrun after run: " + firstRun);
 
                             } catch (Exception e) {
                                 e.printStackTrace();

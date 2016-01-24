@@ -1,6 +1,8 @@
 package lib.JavaMail;
 
 import Main.Messenger;
+import Main.Settings;
+
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MailDateFormat;
@@ -19,9 +21,10 @@ import java.util.*;
  */
 
 public class JavaMail {
-    String protocol = "imap";
-    String host = "imap.gmail.com";
-    String port = "993";
+    String protocol = Settings.getProtocol();
+    String host = Settings.getHost();
+    String port = Settings.getPort();
+    boolean ssl = Settings.getSSL();
 
     private Properties getServerProperties(String protocol, String host, String port) {
         Properties properties = new Properties();
@@ -30,7 +33,10 @@ public class JavaMail {
         properties.setProperty(String.format("mail.%s.socketFactory.class", protocol), "javax.net.ssl.SSLSocketFactory");
         properties.setProperty(String.format("mail.%s.socketFactory.fallback", protocol), "false");
         properties.setProperty(String.format("mail.%s.socketFactory.port", protocol), String.valueOf(port));
-        properties.setProperty("mail.imap.ssl.enable", "true");
+
+        String sslEnabled = "true"; //default
+        if (!ssl) sslEnabled = "false";
+        properties.setProperty("mail.imap.ssl.enable", sslEnabled);
 
         return properties;
     }
@@ -45,10 +51,10 @@ public class JavaMail {
             store.close();
             return true;
         } catch (AuthenticationFailedException ex) {
-            new Main.Messenger("Authentication failed.");
+            new Main.Messenger("Error: Authentication failed.");
             ex.printStackTrace();
         } catch (MessagingException ex) {
-            System.out.println("Could not connect to the message store");
+            System.out.println("Could not connect to the message store. Check connectivity and settings!");
             ex.printStackTrace();
         }
         return false;

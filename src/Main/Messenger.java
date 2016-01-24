@@ -24,7 +24,7 @@ public class Messenger {
         VBox msgBox = new VBox();
         msgBox.setAlignment(Pos.CENTER);
         msgBox.setSpacing(15.0);
-        Scene msgScene = new Scene(msgBox); //TODO: automatically adjust the size
+        Scene msgScene = new Scene(msgBox);
 
         msgStage.setScene(msgScene);
         Button msgButton= new Button("OK");

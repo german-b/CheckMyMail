@@ -32,7 +32,8 @@ public class DB {
     public void createTables() {
         String sql1 = "CREATE TABLE IF NOT EXISTS USERS (ID INT AUTO_INCREMENT, USERNAME TEXT, " +
                 "PASSWORD TEXT);";
-        String sql2= "CREATE TABLE IF NOT EXISTS SETTINGS (DELAY INT DEFAULT 1, SSL BOOLEAN DEFAULT 1, COUNT INT DEFAULT 5);";
+        String sql2= "CREATE TABLE IF NOT EXISTS SETTINGS (DELAY INT DEFAULT 1, SSL BOOLEAN DEFAULT 1, " +
+                "COUNT INT DEFAULT 5, PROTOCOL TEXT DEFAULT 'imap', HOST TEXT DEFAULT 'imap.gmail.com', PORT INT DEFAULT 993);";
 
         String sql3 = "INSERT INTO SETTINGS DEFAULT VALUES;";
 
@@ -93,27 +94,27 @@ public class DB {
     }
 
     public HashMap getUser() {
-        HashMap andmed = new HashMap();
+        HashMap user = new HashMap();
         try {
             stat = conn.createStatement();
             String sql = "SELECT * FROM USERS LIMIT 1;";
 
             ResultSet rs = stat.executeQuery(sql);
             if(rs.next()){
-                andmed.put("username", rs.getString("username"));
-                andmed.put("password", rs.getString("password"));
+                user.put("username", rs.getString("username"));
+                user.put("password", rs.getString("password"));
             }
             rs.close();
             stat.close();
-            return andmed;
+            return user;
         } catch (SQLException e) {
             e.printStackTrace();
             System.exit(0);
         }
-        return andmed;
+        return user;
     }
 
-    public int getEmailCount(){
+    public int getCount(){
         int count = 5;
         try {
             stat = conn.createStatement();
@@ -225,5 +226,62 @@ public class DB {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getProtocol() {
+        String protocol = null;
+        try {
+            stat = conn.createStatement();
+            String sql = "SELECT * FROM SETTINGS LIMIT 1;";
+            ResultSet rs = stat.executeQuery(sql);
+            if (rs.next()) {
+                protocol = rs.getString("protocol");
+            }
+            rs.close();
+            stat.close();
+
+            return protocol;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return protocol;
+    }
+
+    public String getHost() {
+        String host = null;
+        try {
+            stat = conn.createStatement();
+            String sql = "SELECT * FROM SETTINGS LIMIT 1;";
+            ResultSet rs = stat.executeQuery(sql);
+            if (rs.next()) {
+                host = rs.getString("host");
+            }
+            rs.close();
+            stat.close();
+
+            return host;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return host;
+    }
+
+    public int getPort() {
+        int port = 993;
+        try {
+            stat = conn.createStatement();
+            String sql = "SELECT * FROM SETTINGS LIMIT 1;";
+            ResultSet rs = stat.executeQuery(sql);
+            if (rs.next()) {
+                port = rs.getInt("port");
+            }
+            rs.close();
+            stat.close();
+
+            return port;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return port;
     }
 }

@@ -12,8 +12,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import lib.DB.DB;
 
+import java.util.HashMap;
+
 /**
  * Created by german on 03/01/16.
+ *
  */
 
 public class Settings {
@@ -37,7 +40,7 @@ public class Settings {
         ChoiceBox<Integer> emailCount = new ChoiceBox<>(FXCollections.observableArrayList(
                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
         ));
-        emailCount.setValue(d.getEmailCount());
+        emailCount.setValue(d.getCount());
         ChoiceBox<Integer> delayMinutes = new ChoiceBox<>(FXCollections.observableArrayList(
                 1, 3, 5, 15, 30, 60
         ));
@@ -88,12 +91,22 @@ public class Settings {
         settingsStage.show();
     }
 
-    public static int getEmailsNumber() {
-        return d.getEmailCount();
-    }
+    public static int getCount() { return d.getCount(); }
 
-    public static int getDelay() {
-        return d.getDelay();
-    }
+    public static int getDelay() { return d.getDelay(); }
+
+    public static String getProtocol() { return d.getProtocol(); }
+
+    public static String getHost() { return d.getHost(); }
+
+    public static String getPort() { return Integer.toString(d.getPort()); }
+
+    public static boolean getSSL() { return d.getSSL(); }
+
+    public static void createUser(String email, String pwd) { d.createUser(email, pwd); }
+
+    public static void deleteUser() { d.deleteUser(); }
+
+    public static HashMap getUser() { return d.getUser(); }
 
 }

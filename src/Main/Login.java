@@ -7,7 +7,6 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import lib.DB.DB;
 import lib.JavaMail.JavaMail;
 import java.util.HashMap;
 
@@ -20,7 +19,6 @@ public class Login {
     TextField userEmailInput = new TextField();
     PasswordField userPasswordInput = new PasswordField();
     CheckBox rememberMe = new CheckBox("Remember me");
-    DB d = new DB();
     JavaMail connector = new JavaMail();
 
     public Login() {
@@ -55,7 +53,7 @@ public class Login {
             loginStage.close();
         });
 
-        //Main.Login button action
+        //Login button action
         loginButton.setOnAction(event -> {
             String email = userEmailInput.getText();
             String pwd = userPasswordInput.getText();
@@ -66,7 +64,6 @@ public class Login {
                         checkLogin(email, pwd);
                         new Checker(email, pwd);
                         loginStage.close();
-                        d.closeConn();
                     } else {
                         new Messenger(email + " is an invalid e-mail");
                         userEmailInput.clear();
@@ -91,7 +88,7 @@ public class Login {
         });
 
         //Populate the login form if user exists in DB
-        HashMap user = d.getUser();
+        HashMap user = Settings.getUser();
         if (user.containsKey("username") && user.containsKey("password")) {
             this.userEmailInput.setText(user.get("username").toString());
             this.userPasswordInput.setText(user.get("password").toString());
@@ -102,10 +99,10 @@ public class Login {
         if (connector.connectToStore(email, pwd)) {
             if (rememberMe.isSelected()) {
                 //Add working user to DB
-                d.createUser(email, pwd);
+                Settings.createUser(email, pwd);
             } else {
                 //Not remembering user, dropping already existing one too if needed
-                d.deleteUser();
+                Settings.deleteUser();
             }
         }
     }
