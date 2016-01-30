@@ -5,10 +5,8 @@ import Main.Settings;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MailDateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-//import org.jsoup.Jsoup;
 //import javax.mail.internet.MimeMultipart;
 
 /**
@@ -99,6 +97,9 @@ public class JavaMail {
             inbox.open(Folder.READ_ONLY);
             int count = inbox.getMessageCount();
             int arrayCount = 0;
+
+            if (count < num) num = count;
+
             messages = inbox.getMessages(count - num + 1, count);
             for (Message message : messages) {
                 emails.add(new ArrayList<>());
@@ -122,12 +123,15 @@ public class JavaMail {
             e.printStackTrace();
         }
         return emails;
-    }//TODO: handle the different mime types gracefully, not that easy with the below method...scrap for now.
+    }
 
     private String formatDate(Date sentDate) {
         String dateFormat = "yyyy-MM-dd HH:mm:ss";
         return new SimpleDateFormat(dateFormat).format(sentDate);
     }
+
+    //TODO: handle the different mime types gracefully, not that easy with the below method...scrap for now.
+
     /*private String getBodyFromMessage(Message message) throws Exception { //http://stackoverflow.com/a/31877854
         if (message.isMimeType("text/plain")){
             return message.getContent().toString();
